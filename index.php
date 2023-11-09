@@ -9,7 +9,6 @@ $database = "func2c"; //func2c ou func2d
 $username = "root";
 $password = "";
 
-
 $conexao = mysqli_connect(
     $servername, $username, 
     $password,$database
@@ -30,6 +29,10 @@ if(empty($botao)){
 }else if($botao == "Cadastrar"){
     $sql = "INSERT INTO funcionarios 
     (id, nome, cpf) VALUES('','$nome', '$cpf')";
+}else if($botao == "Excluir"){
+    $sql = "DELETE FROM funcionarios WHERE id = 'id'";
+}else if($botão == "Recuperar"){
+    $sql_mostra_cad = "SELECT * FROM funcionarios WHERE nome like '%$pesquisa%'";
 }
 
 //aqui vou tratar erros nas operações C.E.R.A
@@ -42,7 +45,19 @@ if(!empty($sql)){
     }
 }
 
+$selecionado = $_GET["id"];
 
+if(!empty($selecionado)){
+    $sql_selecionado = "SELECT * FROM funcionarios
+                        WHERE id = $selecionado";
+    $resultado = mysqli_query($conexao, $sql_selecionado); 
+         
+    while($linha = mysqli_fetch_assoc($resultado)){
+        $id = $linha["id"];
+        $nome = $linha["nome"];
+        $cpf = $linha["cpf"];
+    }                      
+}
 
 
 
@@ -51,37 +66,39 @@ if(!empty($sql)){
     <body>
     <form name = "func" method = "post" >
         <label>ID</label>
-        <input type ="text" name = "id" /><br />
+        <input type ="text" name = "id" value="<?php echo $id; ?>"/><br />
         <label>Nome</label>
-        <input type ="text" name = "nome" /><br />
+        <input type ="text" name = "nome" value="<?php echo $nome; ?>"/><br />
         <label>CPF</label>
-        <input type ="text" name = "cpf" /><br />
+        <input type ="text" name = "cpf" value="<?php echo $cpf; ?>"/><br />
         <input type ="submit" name = "botao" value = "Cadastrar" />
-        <input type ="reset" name = "botao" value = "cancelar" />
+        <input type ="submit" name = "botao" value = "Excluir" />
     </form>
-    <table>       
-    <tr>
-        <td>-</td>
-        <td>ID</td>
-        <td>Nome</td>
-        <td>CPF</td>
-    </tr>
-<?php
-        $sql_mostra_cad = "SELECT * FROM funcionarios
-                            ORDER BY id DESC
-                            limit 0,10";
-        $resultado = mysqli_query($conexao, $sql_mostra_cad);
-
-        while($linha = mysqli_fetch_assoc($resultado)){
+    <table>
+        <tr>
+            <td>-</td>
+            <td>ID</td>
+            <td>Nome</td>
+            <td>CPF</td>
+        </tr>
+        <?php
+         $sql_mostra_cad = "SELECT * FROM funcionarios
+                            ORDER BY id desc limit 0,10";
+         $resultado = mysqli_query($conexao, $sql_mostra_cad); 
+         
+         while($linha = mysqli_fetch_assoc($resultado)){
             echo "
             <tr>
-            <td><a href='?id=".$linha["Id"]."'>Selecionar</a></td>
-            <td>".$linha["Id"]."</td>
-            <td>".$linha["Nome"]."</td>
-            <td>".$linha["CPF"]."</td>
+                <td>
+                <a href='?id=".$linha["id"]."'>Selecionar</a>
+                </td>
+                <td>".$linha["id"]."</td>
+                <td>".$linha["nome"]."</td>
+                <td>".$linha["cpf"]."</td>
             </tr>
-        "}
-?>
-</table>
-</body>
+            ";
+         }
+        ?>
+    </table>
+    </body>
 </html>
